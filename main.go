@@ -1,22 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"net/http"
+	"os"
+	"os/signal"
+
+	"github.com/chutte2012de/web-page-analyzer/application"
 )
 
 func main() {
-	server := &http.Server{
-		Addr:    ":3000",
-		Handler: http.HandlerFunc(basicHandler),
-	}
+	app := application.New()
 
-	err := server.ListenAndServe()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	err := app.Start(ctx)
 	if err != nil {
-		fmt.Println("failed to listen to server", err)
+		fmt.Println("failed to start app:", err)
 	}
-}
-
-func basicHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
 }
