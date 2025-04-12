@@ -87,7 +87,7 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 			return htmlStat, tokenizer.Err()
 		}
 
-		fmt.Printf("Token: %v\n", html.UnescapeString(token.String()))
+		// fmt.Printf("Token: %v\n", html.UnescapeString(token.String()))
 
 		if tokenType == html.DoctypeToken {
 			htmlStat.Version = token.Data
@@ -108,7 +108,7 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 			currentTokenTag = ""
 		}
 
-		fmt.Printf("currentTokenTag: %v\n", currentTokenTag)
+		// fmt.Printf("currentTokenTag: %v\n", currentTokenTag)
 
 		if html.TextToken == tokenType && currentTokenTag == "title" {
 			htmlStat.Title = token.Data
@@ -128,20 +128,14 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 				htmlStat.Headers.H5++
 			case "h6":
 				htmlStat.Headers.H6++
-				// case "script":
-				// 	fmt.Printf("Script Token: %v\n", html.UnescapeString(token.String()))
-				// case "style":
-				// 	fmt.Printf("Style Token: %v\n", html.UnescapeString(token.String()))
-				// default: //This will also include contents of <script>, <style> tags content
-				// 	fmt.Printf("Others: %v\n", html.UnescapeString(token.String()))
 			}
 		}
 
-		if currentTokenTag == "a" {
+		if currentTokenTag == "a" || currentTokenTag == "link" {
 			for _, attr := range token.Attr {
 				if attr.Key == "href" {
 					//links = append(links, attr.Val)
-					fmt.Println("a Link: [", attr.Val, "]")
+					// fmt.Println("a Link: [", attr.Val, "]")
 					links = append(links, attr.Val)
 				}
 
@@ -149,89 +143,20 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 		}
 
 		if html.SelfClosingTagToken == tokenType {
+			// fmt.Printf("Token: %v\n", html.UnescapeString(token.String()))
+			// fmt.Printf("currentTokenTag: %v\n", currentTokenTag)
+			if currentTokenTag == "img" {
+				for _, attr := range token.Attr {
+					if attr.Key == "src" {
+						//links = append(links, attr.Val)
+						// fmt.Println("a Link: [", attr.Val, "]")
+						links = append(links, attr.Val)
+					}
+
+				}
+			}
 			currentTokenTag = ""
 		}
-
-		// continue
-
-		// if true == docScanningCompleted {
-		// 	break
-		// }
-		// tt := z.Next()
-
-		// fmt.Println("tt: [", tt.String(), "]")
-
-		// switch {
-
-		// case tt == html.ErrorToken:
-		// 	fmt.Println("ErrorToken TOKEN REACHED.")
-		// 	// fmt.Println("elementsMap: ", elementsMap)
-		// 	// fmt.Println("links: ", links)
-		// 	fmt.Println("LEN No. of links: ", len(links))
-		// 	fmt.Println("CAP No. of links: ", cap(links))
-		// 	fmt.Println("titleStr: ", titleStr)
-		// 	docScanningCompleted = true
-		// 	// End of the document, we're done
-		// 	// return
-		// 	//break
-		// case tt == html.DoctypeToken:
-		// 	t := z.Token()
-		// 	fmt.Println("DoctypeToken Type: [", t.Type, "], n Data: [", t.Data, "]")
-
-		// case tt == html.SelfClosingTagToken:
-		// 	t := z.Token()
-		// 	fmt.Println("SelfClosingTagToken BEGIN Type: [", t.Type, "], n Data: [", t.Data, "]")
-
-		// 	for _, attr := range t.Attr {
-		// 		fmt.Println("Attr Key: [", attr.Key, "], n Val: [", attr.Val, "]")
-		// 	}
-		// 	fmt.Println("SelfClosingTagToken END Type: [", t.Type, "], n Data: [", t.Data, "]")
-
-		// case tt == html.TextToken:
-		// 	// t := z.Token()
-		// 	// fmt.Println("TextToken Type: [", t.Type, "], n Data: [", t.Data, "]")
-		// case tt == html.StartTagToken:
-		// 	t := z.Token()
-
-		// 	//fmt.Println("t Type: [", t.Type, "], n Data: [", t.Data, "]")
-
-		// 	v, ok := elementsMap[t.Data]
-		// 	if ok {
-		// 		elementsMap[t.Data] = v + 1
-		// 	} else {
-		// 		elementsMap[t.Data] = 1
-		// 	}
-
-		// 	if "title" == t.Data {
-		// 		fmt.Println("title contents: [", t.String(), "]")
-
-		// 		// for _, attr := range t.Attr {
-		// 		// 	fmt.Println("title contents: Key[", attr.Key, "],  Val[", attr.Val, "]")
-		// 		// }
-		// 		if tt = z.Next(); tt == html.TextToken {
-		// 			titleStr = z.Token().Data
-		// 			fmt.Println(z.Token().Data)
-		// 		}
-		// 	}
-
-		// 	if "a" == t.Data {
-		// 		for _, attr := range t.Attr {
-		// 			if attr.Key == "href" {
-		// 				//links = append(links, attr.Val)
-		// 				// fmt.Println("a Link: [", attr.Val, "]")
-		// 				links = append(links, attr.Val)
-		// 			}
-
-		// 		}
-		// 	}
-
-		// 	if "h1" == t.Data {
-		// 		html_stat.Headers.H1++
-		// 	}
-
-		// 	if "h2" == t.Data {
-		// 		html_stat.Headers.H2++
-		// 	}
 
 		// 	// Check if the token is an <a> tag
 		// 	isAnchor := t.Data == "a"
@@ -247,8 +172,6 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 
 		// }
 	}
-
-	// fmt.Println("elementsMap:", elementsMap)
 
 	return htmlStat, nil
 }
