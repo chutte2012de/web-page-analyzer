@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // go test -v ./...
@@ -140,4 +142,15 @@ func TestExtractFromIoReader_HtmlWithExternalLinks(t *testing.T) {
 	fmt.Println("htmlStat CreatedAt:", htmlStat.CreatedAt)
 	fmt.Println("htmlStat Id:", htmlStat.Id)
 	fmt.Println("htmlStat Title:", htmlStat.Title)
+
+	assert.Equal(t, uint16(1), htmlStat.Headers.H1)
+	assert.Equal(t, uint16(2), htmlStat.Headers.H2)
+	assert.Equal(t, uint16(3), htmlStat.Headers.H3)
+	assert.Equal(t, uint16(4), htmlStat.Headers.H4)
+	assert.Equal(t, uint16(5), htmlStat.Headers.H5)
+	assert.Equal(t, uint16(6), htmlStat.Headers.H6)
+
+	assert.Equal(t, "", htmlStat.Url)
+	assert.Equal(t, "html", htmlStat.Version)
+	assert.Equal(t, "Dinesh Pandiyan | Awesome Dev", htmlStat.Title)
 }

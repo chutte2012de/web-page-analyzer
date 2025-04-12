@@ -19,12 +19,12 @@ type HtmlStat struct {
 }
 
 type Headers struct {
-	H1 uint `json:"h1"`
-	H2 uint `json:"h2"`
-	H3 uint `json:"h3"`
-	H4 uint `json:"h4"`
-	H5 uint `json:"h5"`
-	H6 uint `json:"h6"`
+	H1 uint16 `json:"h1"`
+	H2 uint16 `json:"h2"`
+	H3 uint16 `json:"h3"`
+	H4 uint16 `json:"h4"`
+	H5 uint16 `json:"h5"`
+	H6 uint16 `json:"h6"`
 }
 
 type Links struct {
