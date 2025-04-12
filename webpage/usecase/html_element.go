@@ -12,6 +12,7 @@ import (
 )
 
 type HtmlElement struct {
+	LinkMan *LinkManager
 }
 
 func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
@@ -33,7 +34,7 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	b := resp.Body
 	defer b.Close() // close Body when the function completes
 
-	htmlStat, err := h.ExtractFromIoReader(b)
+	htmlStat, links, err := h.ExtractFromIoReader(b)
 
 	if err != nil {
 		fmt.Println("ERROR: Failed to ExtractFromIoReader of Url:", url)
@@ -44,6 +45,8 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 		}, err
 	}
 
+	h.LinkMan.CategorizeLinks(url, links)
+
 	fmt.Println("End Extract url: [", url, "]")
 
 	htmlStat.Url = url
@@ -51,7 +54,7 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	return htmlStat, nil
 }
 
-func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
+func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error) {
 	now := time.Now().UTC()
 	htmlStat := model.HtmlStat{
 		Id: rand.Uint64(),
@@ -81,10 +84,10 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 			fmt.Println("links cap: ", cap(links))
 			if tokenizer.Err() == io.EOF {
 				fmt.Printf("End of File")
-				return htmlStat, nil
+				return htmlStat, links, nil
 			}
 			fmt.Printf("Error: %v", tokenizer.Err())
-			return htmlStat, tokenizer.Err()
+			return htmlStat, links, tokenizer.Err()
 		}
 
 		// fmt.Printf("Token: %v\n", html.UnescapeString(token.String()))
@@ -173,5 +176,5 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 		// }
 	}
 
-	return htmlStat, nil
+	return htmlStat, links, nil
 }
