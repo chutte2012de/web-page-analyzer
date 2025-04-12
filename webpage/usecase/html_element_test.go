@@ -39,7 +39,7 @@ func TestExtractFromUrl(t *testing.T) {
 // }
 
 func TestExtractFromIoReader_HtmlWithExternalLinks(t *testing.T) {
-	//return
+	return
 
 	h := HtmlElement{}
 	const sampleHtml = `<!DOCTYPE html>

@@ -34,7 +34,7 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	b := resp.Body
 	defer b.Close() // close Body when the function completes
 
-	htmlStat, links, err := h.ExtractFromIoReader(b)
+	htmlStat, _, err := h.ExtractFromIoReader(b)
 
 	if err != nil {
 		fmt.Println("ERROR: Failed to ExtractFromIoReader of Url:", url)
@@ -45,7 +45,9 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 		}, err
 	}
 
-	h.LinkMan.CategorizeLinks(url, links)
+	// TODO:
+	//h.LinkMan.CategorizeLinks(url, links)
+	//h.LinkMan.ValidateLinks("", links)
 
 	fmt.Println("End Extract url: [", url, "]")
 
