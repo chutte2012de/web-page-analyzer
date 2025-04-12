@@ -29,9 +29,9 @@ func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {
 	links := model.Links{}
 
 	html_stat := model.HtmlStat{
-		SummaryId: rand.Uint64(),
-		Url:       body.Url,
-		Links:     links,
+		Id:    rand.Uint64(),
+		Url:   body.Url,
+		Links: links,
 
 		CreatedAt: &now,
 	}
