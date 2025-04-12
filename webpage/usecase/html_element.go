@@ -52,17 +52,6 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 }
 
 func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
-	// fmt.Println("Begin url: [", url, "]")
-	// resp, err := http.Get(url)
-
-	// if err != nil {
-	// 	fmt.Println("ERROR: Failed to crawl:", url)
-	// 	return
-	// }
-
-	// b := resp.Body
-	// defer b.Close() // close Body when the function completes
-
 	now := time.Now().UTC()
 	htmlStat := model.HtmlStat{
 		Id: rand.Uint64(),
@@ -79,14 +68,7 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 
 	tokenizer := html.NewTokenizer(r)
 
-	// elementsMap := make(map[string]uint16)
-
-	// links := []string{}
-	// links := make([]string, 100)
-
-	// titleStr := ""
-
-	// docScanningCompleted := false
+	links := make([]string, 0, 100)
 
 	currentTokenTag := ""
 
@@ -94,6 +76,9 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 		tokenType := tokenizer.Next()
 		token := tokenizer.Token()
 		if tokenType == html.ErrorToken {
+			fmt.Printf("links: %v\n", links)
+			fmt.Println("links len: ", len(links))
+			fmt.Println("links cap: ", cap(links))
 			if tokenizer.Err() == io.EOF {
 				fmt.Printf("End of File")
 				return htmlStat, nil
@@ -149,6 +134,17 @@ func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, error) {
 				// 	fmt.Printf("Style Token: %v\n", html.UnescapeString(token.String()))
 				// default: //This will also include contents of <script>, <style> tags content
 				// 	fmt.Printf("Others: %v\n", html.UnescapeString(token.String()))
+			}
+		}
+
+		if currentTokenTag == "a" {
+			for _, attr := range token.Attr {
+				if attr.Key == "href" {
+					//links = append(links, attr.Val)
+					fmt.Println("a Link: [", attr.Val, "]")
+					links = append(links, attr.Val)
+				}
+
 			}
 		}
 
