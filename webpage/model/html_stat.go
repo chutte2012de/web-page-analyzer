@@ -5,11 +5,14 @@ import (
 )
 
 type HtmlStat struct {
-	SummaryId   uint64     `json:"summary_id"`
+	Id          uint64     `json:"id"`
 	Url         string     `json:"url"`
+	Version     string     `json:"version"`
 	Title       string     `json:"title"`
 	Links       Links      `json:"links"`
 	Headers     Headers    `json:"headers"`
+	Form        string     `json:"form"`
+	LoginForm   string     `json:"login_form"`
 	CreatedAt   *time.Time `json:"created_at"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 	CompletedAt *time.Time `json:"completed_at"`
@@ -25,8 +28,8 @@ type Headers struct {
 }
 
 type Links struct {
-	InboundLinks  []Link `json:"inbound_links"`
-	OutboundLinks []Link `json:"outbound_links"`
+	Internal []Link `json:"internal"`
+	External []Link `json:"external"`
 }
 
 type Link struct {
