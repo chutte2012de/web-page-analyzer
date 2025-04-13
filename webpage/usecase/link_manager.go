@@ -23,14 +23,18 @@ type Job struct {
 func (l *LinkManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error) {
 	slog.Info("GetLinksInfo", "inputUrlStr", inputUrlStr)
 	inputUrlHostName, inputUrlWebsiteBaseName, _ := l.GetHostAndWebsiteBaseNames(inputUrlStr)
-	internalLinksWithoutPreffix, _, externalLinks, _ := l.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
-	// internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, _ := h.LinkMan.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
+	internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, _ := l.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
 
 	internalWithoutPreffixLinksInfo, _ := l.ValidateLinks(inputUrlHostName, internalLinksWithoutPreffix)
 	internalWithoutPreffixLinksSummaryStat, _ := l.GetLinksSummaryStat(internalWithoutPreffixLinksInfo)
 
-	// linksInfo, _ := h.LinkMan.ValidateLinks("", linksInPage)
-	// linksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(linksInfo)
+	internalWithPreffixLinksInfo, _ := l.ValidateLinks("", internalLinksWithPreffix)
+	internalWithPreffixLinksSummaryStat, _ := l.GetLinksSummaryStat(internalWithPreffixLinksInfo)
+
+	internalWithoutPreffixLinksInfo = append(internalWithoutPreffixLinksInfo, internalWithPreffixLinksInfo...)
+	internalWithoutPreffixLinksSummaryStat.TotalCount += internalWithPreffixLinksSummaryStat.TotalCount
+	internalWithoutPreffixLinksSummaryStat.ReachableCount += internalWithPreffixLinksSummaryStat.ReachableCount
+	internalWithoutPreffixLinksSummaryStat.UnreachableCount += internalWithPreffixLinksSummaryStat.UnreachableCount
 
 	externalLinksInfo, _ := l.ValidateLinks("", externalLinks)
 	externalLinksSummaryStat, _ := l.GetLinksSummaryStat(externalLinksInfo)
