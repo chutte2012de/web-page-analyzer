@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/chutte2012de/web-page-analyzer/webpage/handler"
 	"github.com/chutte2012de/web-page-analyzer/webpage/usecase"
@@ -20,6 +21,7 @@ func (a *App) loadRoutes() {
 	})
 
 	router.Route("/webpage/htmlstat", a.loadOrderRoutes)
+	router.Handle("/metrics", promhttp.Handler())
 
 	a.router = router
 }
