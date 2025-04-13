@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"fmt"
-	"net/http"
 	"sync"
 
+	"github.com/chutte2012de/web-page-analyzer/webpage/model"
 	"github.com/useinsider/go-pkg/insrequester"
 )
 
@@ -26,10 +26,28 @@ func (l *LinkManager) CategorizeLinks(url string, links []string) ([]string, []s
 	return internalLinks, externalLinks, nil
 }
 
-func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *http.Response, wg *sync.WaitGroup) {
+func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *model.Link, wg *sync.WaitGroup) {
 	for job := range jobs {
-		res, _ := requester.Get(insrequester.RequestEntity{Endpoint: job.URL})
-		results <- res
+		result := model.Link{
+			Url: job.URL,
+		}
+		res, err := requester.Get(insrequester.RequestEntity{Endpoint: job.URL})
+		//defer res.Body.Close()
+
+		if err != nil {
+			fmt.Println("ERROR: Failed to reach:", job.URL, " with error", err)
+			result.Status = string(err.Error())
+		} else {
+			result.Status = res.Status
+			//result.Body = string(res.Body)
+		}
+		// results <- res
+		// results <- &model.Link{
+		// 	Url:    job.URL,
+		// 	Status: string(res.),
+		// }
+		results <- &result
+
 		wg.Done()
 	}
 }
@@ -40,13 +58,10 @@ func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]string, e
 
 	requester := insrequester.NewRequester().Load()
 
-	urls := []string{"http://example.com", "https://www.freecodecamp.org",
-		"https://www.behance.net", "https://codepen.io", "http://example.org",
-		"http://example.net", "http://exampleapple.net/"}
 	numWorkers := 2 // Define the number of workers in the pool
 
-	jobs := make(chan Job, len(urls))
-	results := make(chan *http.Response, len(urls))
+	jobs := make(chan Job, len(links))
+	results := make(chan *model.Link, len(links))
 	var wg sync.WaitGroup
 
 	// Start workers
@@ -55,15 +70,15 @@ func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]string, e
 	}
 
 	// Sending jobs to the worker pool
-	wg.Add(len(urls))
-	for _, url := range urls {
+	wg.Add(len(links))
+	for _, url := range links {
 		jobs <- Job{URL: url}
 	}
 	close(jobs)
 	wg.Wait()
 
 	// Collecting results
-	for i := 0; i < len(urls); i++ {
+	for i := 0; i < len(links); i++ {
 		fmt.Println("Result")
 		fmt.Println(<-results)
 		fmt.Println()

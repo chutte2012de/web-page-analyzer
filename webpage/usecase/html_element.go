@@ -23,7 +23,7 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	now := time.Now().UTC()
 
 	if err != nil {
-		fmt.Println("ERROR: Failed to crawl:", url)
+		fmt.Println("ERROR: Failed to crawl:", url, " with error", err)
 		return model.HtmlStat{
 			Id:        rand.Uint64(),
 			Url:       url,
