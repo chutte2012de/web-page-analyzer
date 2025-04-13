@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"fmt"
-	"log"
 	"log/slog"
 	"net/url"
 	"strings"
@@ -29,8 +27,6 @@ func (l *LinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, st
 		slog.Error("Input Url String Parsing failed", "inputUrlStr", inputUrlStr)
 		return "", "", err
 	}
-	log.Println("Input Url Host: ", inputUrl.Host)
-	log.Println("Input Url Host Name: ", inputUrl.Hostname())
 	websiteBaseName := strings.TrimPrefix(inputUrl.Hostname(), "www.")
 
 	slog.Info("GetHostAndWebsiteBaseNames", "websiteBaseName", websiteBaseName)
@@ -75,7 +71,7 @@ func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *mo
 		//defer res.Body.Close()
 
 		if err != nil {
-			fmt.Println("ERROR: Failed to reach:", job.URL, " with error", err)
+			slog.Info("Failed to reach by Link Worker", "url", job.URL, "error", err)
 			result.Status = string(err.Error())
 		} else {
 			result.Status = res.Status
@@ -95,7 +91,7 @@ func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *mo
 func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]model.Link, error) {
 	requester := insrequester.NewRequester().Load()
 
-	numWorkers := 2 // Define the number of workers in the pool
+	numWorkers := 5 // Define the number of workers in the pool
 
 	jobs := make(chan Job, len(links))
 	results := make(chan *model.Link, len(links))
@@ -118,12 +114,12 @@ func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]model.Lin
 
 	// Collecting results
 	for i := 0; i < len(links); i++ {
-		fmt.Println("Result")
+		//fmt.Println("Result")
 		r := <-results
-		fmt.Println(r)
+		// fmt.Println(r)
 		// fmt.Println(<-results)
 		output = append(output, *r)
-		fmt.Println()
+		//fmt.Println()
 	}
 	close(results)
 	wg.Wait()

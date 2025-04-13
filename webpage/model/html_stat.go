@@ -9,7 +9,7 @@ type HtmlStat struct {
 	Url         string     `json:"url"`
 	Version     string     `json:"version"`
 	Title       string     `json:"title"`
-	Links       Links      `json:"links"`
+	LinksInfo   LinksInfo  `json:"links_info"`
 	Headers     Headers    `json:"headers"`
 	Form        string     `json:"form"`
 	LoginForm   string     `json:"login_form"`
@@ -27,12 +27,29 @@ type Headers struct {
 	H6 uint16 `json:"h6"`
 }
 
-type Links struct {
+type LinksInfo struct {
+	Summary LinksSummary `json:"summary"`
+	Detail  LinksDetail  `json:"detail"`
+}
+
+type LinksSummary struct {
+	Internal SummaryStat `json:"internal"`
+	External SummaryStat `json:"external"`
+}
+
+type SummaryStat struct {
+	TotalCount       uint16 `json:"total_count"`
+	ReachableCount   uint16 `json:"reachable_count"`
+	UnreachableCount uint16 `json:"unreachable_count"`
+}
+
+type LinksDetail struct {
 	Internal []Link `json:"internal"`
 	External []Link `json:"external"`
 }
 
 type Link struct {
-	Url    string `json:"url"`
-	Status string `json:"status"`
+	Url       string `json:"url"`
+	Reachable string `json:"reachable"`
+	Status    string `json:"status"`
 }

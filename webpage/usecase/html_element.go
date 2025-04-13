@@ -3,6 +3,7 @@ package usecase
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"math/rand/v2"
 	"net/http"
 	"time"
@@ -17,13 +18,13 @@ type HtmlElement struct {
 
 func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 
-	fmt.Println("Begin Extract url: [", url, "]")
+	slog.Info("Start ExtractFromUrl", "url", url)
 	resp, err := http.Get(url)
 
 	now := time.Now().UTC()
 
 	if err != nil {
-		fmt.Println("ERROR: Failed to crawl:", url, " with error", err)
+		slog.Error("Failed http Get", "url", url, "error", err)
 		return model.HtmlStat{
 			Id:        rand.Uint64(),
 			Url:       url,
@@ -37,7 +38,7 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	htmlStat, linksInPage, err := h.ExtractFromIoReader(b)
 
 	if err != nil {
-		fmt.Println("ERROR: Failed to ExtractFromIoReader of Url:", url)
+		slog.Error("Failed to Extract Html Elements", "url", url, "error", err)
 		return model.HtmlStat{
 			Id:        rand.Uint64(),
 			Url:       url,
@@ -48,14 +49,14 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	// TODO:
 	//h.LinkMan.CategorizeLinks(url, links)
 	linksInfo, _ := h.LinkMan.ValidateLinks("", linksInPage)
-	htmlStat.Links = model.Links{
-		External: linksInfo,
+	htmlStat.LinksInfo = model.LinksInfo{
+		Detail: model.LinksDetail{
+			External: linksInfo,
+		},
 	}
 
-	fmt.Println("End Extract url: [", url, "]")
-
 	htmlStat.Url = url
-
+	slog.Info("Complete ExtractFromUrl", "url", url)
 	return htmlStat, nil
 }
 
