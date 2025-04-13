@@ -20,13 +20,15 @@ func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		slog.Error("Failed to decode Request Body", "error", err)
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
 	html_stat, err := h.HtmlElement.ExtractFromUrl(body.Url)
 	if err != nil {
 		slog.Error("Failed to Extract Html Element Statistics", "errpr", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
@@ -34,9 +36,10 @@ func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		slog.Error("Failed to Marshal Html Element Statistics", "error", err)
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	w.Write(res)
 }
