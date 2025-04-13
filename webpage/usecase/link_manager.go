@@ -20,6 +20,35 @@ type Job struct {
 	URL string
 }
 
+func (l *LinkManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error) {
+	slog.Info("GetLinksInfo", "inputUrlStr", inputUrlStr)
+	inputUrlHostName, inputUrlWebsiteBaseName, _ := l.GetHostAndWebsiteBaseNames(inputUrlStr)
+	internalLinksWithoutPreffix, _, externalLinks, _ := l.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
+	// internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, _ := h.LinkMan.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
+
+	internalWithoutPreffixLinksInfo, _ := l.ValidateLinks(inputUrlHostName, internalLinksWithoutPreffix)
+	internalWithoutPreffixLinksSummaryStat, _ := l.GetLinksSummaryStat(internalWithoutPreffixLinksInfo)
+
+	// linksInfo, _ := h.LinkMan.ValidateLinks("", linksInPage)
+	// linksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(linksInfo)
+
+	externalLinksInfo, _ := l.ValidateLinks("", externalLinks)
+	externalLinksSummaryStat, _ := l.GetLinksSummaryStat(externalLinksInfo)
+
+	linksInfo := model.LinksInfo{
+		Summary: model.LinksSummary{
+			Internal: internalWithoutPreffixLinksSummaryStat,
+			External: externalLinksSummaryStat,
+		},
+		Detail: model.LinksDetail{
+			Internal: internalWithoutPreffixLinksInfo,
+			External: externalLinksInfo,
+		},
+	}
+
+	return linksInfo, nil
+}
+
 func (l *LinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error) {
 	slog.Info("GetHostAndWebsiteBaseNames", "inputUrlStr", inputUrlStr)
 	inputUrl, err := url.Parse(inputUrlStr)
