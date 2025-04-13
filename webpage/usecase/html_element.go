@@ -47,16 +47,27 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	}
 
 	// TODO:
-	//h.LinkMan.CategorizeLinks(url, links)
-	linksInfo, _ := h.LinkMan.ValidateLinks("", linksInPage)
-	linksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(linksInfo)
+	inputUrlHostName, inputUrlWebsiteBaseName, _ := h.LinkMan.GetHostAndWebsiteBaseNames(url)
+	internalLinksWithoutPreffix, _, externalLinks, _ := h.LinkMan.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
+	// internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, _ := h.LinkMan.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
+
+	internalWithoutPreffixLinksInfo, _ := h.LinkMan.ValidateLinks(inputUrlHostName, internalLinksWithoutPreffix)
+	internalWithoutPreffixLinksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(internalWithoutPreffixLinksInfo)
+
+	// linksInfo, _ := h.LinkMan.ValidateLinks("", linksInPage)
+	// linksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(linksInfo)
+
+	externalLinksInfo, _ := h.LinkMan.ValidateLinks("", externalLinks)
+	externalLinksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(externalLinksInfo)
 
 	htmlStat.LinksInfo = model.LinksInfo{
 		Summary: model.LinksSummary{
-			External: linksSummaryStat,
+			Internal: internalWithoutPreffixLinksSummaryStat,
+			External: externalLinksSummaryStat,
 		},
 		Detail: model.LinksDetail{
-			External: linksInfo,
+			Internal: internalWithoutPreffixLinksInfo,
+			External: externalLinksInfo,
 		},
 	}
 

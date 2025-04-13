@@ -28,10 +28,13 @@ func (l *LinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, st
 		return "", "", err
 	}
 	websiteBaseName := strings.TrimPrefix(inputUrl.Hostname(), "www.")
-
 	slog.Info("GetHostAndWebsiteBaseNames", "websiteBaseName", websiteBaseName)
 
-	return inputUrl.Hostname(), websiteBaseName, nil
+	inputUrl.Path = ""
+	inputUrl.RawQuery = ""
+	inputUrl.Fragment = ""
+
+	return inputUrl.String(), websiteBaseName, nil
 }
 
 func (l *LinkManager) CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error) {
@@ -122,7 +125,7 @@ func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]model.Lin
 	// Sending jobs to the worker pool
 	wg.Add(len(links))
 	for _, url := range links {
-		jobs <- Job{URL: url}
+		jobs <- Job{URL: preffix + url}
 	}
 	close(jobs)
 	wg.Wait()

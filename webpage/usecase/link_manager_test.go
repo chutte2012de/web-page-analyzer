@@ -31,7 +31,7 @@ func TestGetHostAndWebsiteBaseNames_FromLink(t *testing.T) {
 	}
 	fmt.Println("hostName:", hostName)
 	fmt.Println("websiteName:", websiteName)
-	assert.Equal(t, "www.digitalocean.com", hostName)
+	assert.Equal(t, "https://www.digitalocean.com", hostName)
 	assert.Equal(t, "digitalocean.com", websiteName)
 }
 
@@ -44,7 +44,7 @@ func TestGetHostAndWebsiteBaseNames_FromMainWebSiteUrl(t *testing.T) {
 	}
 	fmt.Println("hostName:", hostName)
 	fmt.Println("websiteName:", websiteName)
-	assert.Equal(t, "www.facebook.com", hostName)
+	assert.Equal(t, "http://www.facebook.com", hostName)
 	assert.Equal(t, "facebook.com", websiteName)
 }
 
