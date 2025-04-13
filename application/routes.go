@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/chutte2012de/web-page-analyzer/webpage/handler"
+	"github.com/chutte2012de/web-page-analyzer/webpage/usecase"
 )
 
 func (a *App) loadRoutes() {
@@ -25,7 +26,11 @@ func (a *App) loadRoutes() {
 
 func (a *App) loadOrderRoutes(router chi.Router) {
 
-	webPageHtmlStatHandler := &handler.HtmlStat{}
+	webPageHtmlStatHandler := &handler.HtmlStat{
+		HtmlElement: &usecase.HtmlElement{
+			LinkMan: &usecase.LinkManager{},
+		},
+	}
 
 	router.Post("/", webPageHtmlStatHandler.Create)
 }

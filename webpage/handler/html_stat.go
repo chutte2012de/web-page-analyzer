@@ -2,15 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
-	"math/rand/v2"
+	"log/slog"
 	"net/http"
-	"time"
 
-	"github.com/chutte2012de/web-page-analyzer/webpage/model"
+	"github.com/chutte2012de/web-page-analyzer/webpage/usecase"
 )
 
 type HtmlStat struct {
+	HtmlElement *usecase.HtmlElement
 }
 
 func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {
@@ -19,26 +18,21 @@ func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		fmt.Println("failed to decode in created:", err)
+		slog.Error("Failed to decode Request Body", "error", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	now := time.Now().UTC()
-
-	links := model.Links{}
-
-	html_stat := model.HtmlStat{
-		Id:    rand.Uint64(),
-		Url:   body.Url,
-		Links: links,
-
-		CreatedAt: &now,
+	html_stat, err := h.HtmlElement.ExtractFromUrl(body.Url)
+	if err != nil {
+		slog.Error("Failed to Extract Html Element Statistics", "errpr", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	res, err := json.Marshal(html_stat)
 	if err != nil {
-		fmt.Println("failed to marshal:", err)
+		slog.Error("Failed to Marshal Html Element Statistics", "error", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
