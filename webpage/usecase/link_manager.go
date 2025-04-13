@@ -2,6 +2,9 @@ package usecase
 
 import (
 	"fmt"
+	"log"
+	"net/url"
+	"strings"
 	"sync"
 
 	"github.com/chutte2012de/web-page-analyzer/webpage/model"
@@ -18,10 +21,21 @@ type Job struct {
 	URL string
 }
 
-func (l *LinkManager) CategorizeLinks(url string, links []string) ([]string, []string, error) {
+func (l *LinkManager) CategorizeLinks(mainUrlStr string, links []string) ([]string, []string, error) {
 
 	internalLinks := make([]string, 0, 100)
 	externalLinks := make([]string, 0, 100)
+
+	mainUrl, _ := url.Parse(mainUrlStr)
+	log.Println("Main URL Host: ", mainUrl.Host)
+	log.Println("Main URL Host Name: ", mainUrl.Hostname())
+	currentHostName := strings.TrimPrefix(mainUrl.Hostname(), "www.")
+	log.Println("currentHostName: ", currentHostName)
+
+	for _, linkUrlStr := range links {
+		log.Println("linkUrl: ", linkUrlStr)
+
+	}
 
 	return internalLinks, externalLinks, nil
 }

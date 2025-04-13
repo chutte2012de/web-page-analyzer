@@ -12,7 +12,7 @@ import (
 // https://dev.to/dave3130/golang-html-tokenizer-5fh7
 
 func TestExtractFromUrl(t *testing.T) {
-	return
+	//return
 	h := HtmlElement{}
 	htmlStat, err := h.ExtractFromUrl("https://www.digitalocean.com/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package")
 	if err != nil {
