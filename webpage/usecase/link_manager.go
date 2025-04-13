@@ -52,10 +52,7 @@ func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *mo
 	}
 }
 
-func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]string, error) {
-
-	internalLinks := make([]string, 0, 100)
-
+func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]model.Link, error) {
 	requester := insrequester.NewRequester().Load()
 
 	numWorkers := 2 // Define the number of workers in the pool
@@ -77,12 +74,20 @@ func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]string, e
 	close(jobs)
 	wg.Wait()
 
+	output := make([]model.Link, 0, len(links))
+
 	// Collecting results
 	for i := 0; i < len(links); i++ {
 		fmt.Println("Result")
-		fmt.Println(<-results)
+		r := <-results
+		fmt.Println(r)
+		// fmt.Println(<-results)
+		output = append(output, *r)
 		fmt.Println()
 	}
+	close(results)
+	wg.Wait()
+	//wg.Done()
 
-	return internalLinks, nil
+	return output, nil
 }
