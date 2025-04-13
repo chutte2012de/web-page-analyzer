@@ -62,26 +62,43 @@ func (l *LinkManager) CategorizeLinks(websiteBaseName string, links []string) ([
 	return internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, nil
 }
 
+func (l *LinkManager) GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error) {
+	total := 0
+	reachable := 0
+	unreachable := 0
+
+	for _, link := range links {
+		total++
+		if link.Reachable == "YES" {
+			reachable++
+		} else if link.Reachable == "NO" {
+			unreachable++
+		}
+	}
+
+	summary := model.SummaryStat{
+		TotalCount:       uint16(total),
+		ReachableCount:   uint16(reachable),
+		UnreachableCount: uint16(unreachable),
+	}
+	return summary, nil
+}
+
 func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *model.Link, wg *sync.WaitGroup) {
 	for job := range jobs {
 		result := model.Link{
 			Url: job.URL,
 		}
 		res, err := requester.Get(insrequester.RequestEntity{Endpoint: job.URL})
-		//defer res.Body.Close()
 
 		if err != nil {
 			slog.Info("Failed to reach by Link Worker", "url", job.URL, "error", err)
 			result.Status = string(err.Error())
+			result.Reachable = "NO"
 		} else {
 			result.Status = res.Status
-			//result.Body = string(res.Body)
+			result.Reachable = "YES"
 		}
-		// results <- res
-		// results <- &model.Link{
-		// 	Url:    job.URL,
-		// 	Status: string(res.),
-		// }
 		results <- &result
 
 		wg.Done()

@@ -49,7 +49,12 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	// TODO:
 	//h.LinkMan.CategorizeLinks(url, links)
 	linksInfo, _ := h.LinkMan.ValidateLinks("", linksInPage)
+	linksSummaryStat, _ := h.LinkMan.GetLinksSummaryStat(linksInfo)
+
 	htmlStat.LinksInfo = model.LinksInfo{
+		Summary: model.LinksSummary{
+			External: linksSummaryStat,
+		},
 		Detail: model.LinksDetail{
 			External: linksInfo,
 		},
