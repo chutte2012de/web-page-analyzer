@@ -19,6 +19,17 @@ func TestValidateLinks(t *testing.T) {
 	fmt.Println("results:", results)
 }
 
+func TestGetHostAndWebsiteBaseNames(t *testing.T) {
+	linkMan := LinkManager{}
+
+	hostName, websiteName, err := linkMan.GetHostAndWebsiteBaseNames("https://www.digitalocean.com/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package")
+	if err != nil {
+		t.Fatalf("unexpected error Extracting Host name and Website name: %v", err)
+	}
+	fmt.Println("hostName:", hostName)
+	fmt.Println("websiteName:", websiteName)
+}
+
 func TestCategorizeLinks(t *testing.T) {
 	linkMan := LinkManager{}
 
@@ -41,11 +52,16 @@ func TestCategorizeLinks(t *testing.T) {
 		"/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package#step-2-mdash-writing-unit-tests-in-go",
 		"/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package#step-3-mdash-testing-your-go-code-using-the-go-test-command"}
 
-	internalLinks, externalLinks, err := linkMan.CategorizeLinks("https://www.digitalocean.com/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package", urls)
+	fmt.Println("Total Input Links Len:", len(urls))
+	internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, err := linkMan.CategorizeLinks("digitalocean.com", urls)
 	if err != nil {
 		t.Fatalf("unexpected error Categorizing Links: %v", err)
 	}
-	fmt.Println("internalLinks:", internalLinks)
+	fmt.Println("internalLinksWithoutPreffix Len:", len(internalLinksWithoutPreffix))
+	fmt.Println("internalLinksWithoutPreffix:", internalLinksWithoutPreffix)
+	fmt.Println("internalLinksWithPreffix Len:", len(internalLinksWithPreffix))
+	fmt.Println("internalLinksWithPreffix:", internalLinksWithPreffix)
+	fmt.Println("externalLinks Len:", len(externalLinks))
 	fmt.Println("externalLinks:", externalLinks)
 
 }

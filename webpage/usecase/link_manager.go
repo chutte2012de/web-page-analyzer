@@ -3,6 +3,7 @@ package usecase
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/url"
 	"strings"
 	"sync"
@@ -21,23 +22,48 @@ type Job struct {
 	URL string
 }
 
-func (l *LinkManager) CategorizeLinks(mainUrlStr string, links []string) ([]string, []string, error) {
+func (l *LinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error) {
+	slog.Info("GetHostAndWebsiteBaseNames", "inputUrlStr", inputUrlStr)
+	inputUrl, err := url.Parse(inputUrlStr)
+	if err != nil {
+		slog.Error("Input Url String Parsing failed", "inputUrlStr", inputUrlStr)
+		return "", "", err
+	}
+	log.Println("Input Url Host: ", inputUrl.Host)
+	log.Println("Input Url Host Name: ", inputUrl.Hostname())
+	websiteBaseName := strings.TrimPrefix(inputUrl.Hostname(), "www.")
 
-	internalLinks := make([]string, 0, 100)
+	slog.Info("GetHostAndWebsiteBaseNames", "websiteBaseName", websiteBaseName)
+
+	return inputUrl.Hostname(), websiteBaseName, nil
+}
+
+func (l *LinkManager) CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error) {
+	slog.Info("CategorizeLinks", "websiteBaseName", websiteBaseName)
+
+	internalLinksWithoutPreffix := make([]string, 0, 100)
+	internalLinksWithPreffix := make([]string, 0, 100)
 	externalLinks := make([]string, 0, 100)
 
-	mainUrl, _ := url.Parse(mainUrlStr)
-	log.Println("Main URL Host: ", mainUrl.Host)
-	log.Println("Main URL Host Name: ", mainUrl.Hostname())
-	currentHostName := strings.TrimPrefix(mainUrl.Hostname(), "www.")
-	log.Println("currentHostName: ", currentHostName)
-
 	for _, linkUrlStr := range links {
-		log.Println("linkUrl: ", linkUrlStr)
+		slog.Info("Parsing Link URL", "linkUrlStr", linkUrlStr)
+		linkUrl, err := url.Parse(linkUrlStr)
+		if err != nil {
+			slog.Error("Link URL Parsed failed", "linkUrlStr", linkUrlStr)
+			continue
+		}
 
+		slog.Info("Link URL Parsed", "Hostname", linkUrl.Hostname())
+		if linkUrl.Hostname() == "" {
+			internalLinksWithoutPreffix = append(internalLinksWithoutPreffix, linkUrlStr)
+		} else if strings.Contains(linkUrl.Hostname(), websiteBaseName) {
+			internalLinksWithPreffix = append(internalLinksWithPreffix, linkUrlStr)
+		} else {
+			externalLinks = append(externalLinks, linkUrlStr)
+		}
 	}
 
-	return internalLinks, externalLinks, nil
+	return internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, nil
 }
 
 func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *model.Link, wg *sync.WaitGroup) {

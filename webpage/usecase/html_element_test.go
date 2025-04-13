@@ -10,6 +10,8 @@ import (
 
 // go test -v ./...
 // https://dev.to/dave3130/golang-html-tokenizer-5fh7
+// https://stackoverflow.com/questions/74426546/how-to-calculate-total-code-coverage-for-tests
+// https://medium.com/zus-health/mocking-outbound-http-requests-in-go-youre-probably-doing-it-wrong-60373a38d2aa
 
 func TestExtractFromUrl(t *testing.T) {
 	//return
