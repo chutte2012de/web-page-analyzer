@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/chutte2012de/web-page-analyzer/webpage/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -143,4 +144,54 @@ func TestCategorizeLinks(t *testing.T) {
 	assert.Equal(t, "http://exampleapple.net/", externalLinks[6])
 	assert.Equal(t, "https://www.youtube.com/playlist?list=PLseEp7p6Ewibnv09L_48W3bi2HKiY6lrx", externalLinks[7])
 	assert.Equal(t, "https://ugurus.com/start-here/?utm_source=DO&utm_medium=partners&utm_content=menu", externalLinks[8])
+}
+
+func TestGetLinksSummaryStat_WithOneLinkAndNoReachabilityInfo(t *testing.T) {
+	linkMan := LinkManager{}
+
+	links := make([]model.Link, 0, 3)
+
+	links = append(links, model.Link{
+		Url: "www.abc.com",
+	})
+
+	linksStatSummary, err := linkMan.GetLinksSummaryStat(links)
+	if err != nil {
+		t.Fatalf("unexpected error Generating Link Stat Sum: %v", err)
+	}
+	fmt.Println("linksStatSummary:", linksStatSummary)
+	assert.Equal(t, uint16(1), linksStatSummary.TotalCount)
+	assert.Equal(t, uint16(0), linksStatSummary.ReachableCount)
+	assert.Equal(t, uint16(0), linksStatSummary.UnreachableCount)
+}
+
+func TestGetLinksSummaryStat_MultipleLinks(t *testing.T) {
+	linkMan := LinkManager{}
+
+	links := make([]model.Link, 0, 3)
+
+	links = append(links, model.Link{
+		Url: "www.abc0.com",
+	})
+	links = append(links, model.Link{
+		Url:       "www.abc1.com",
+		Reachable: "YES",
+	})
+	links = append(links, model.Link{
+		Url:       "www.abc2.com",
+		Reachable: "NO",
+	})
+	links = append(links, model.Link{
+		Url:       "www.abc3.com",
+		Reachable: "NO",
+	})
+
+	linksStatSummary, err := linkMan.GetLinksSummaryStat(links)
+	if err != nil {
+		t.Fatalf("unexpected error Generating Link Stat Sum: %v", err)
+	}
+	fmt.Println("linksStatSummary:", linksStatSummary)
+	assert.Equal(t, uint16(4), linksStatSummary.TotalCount)
+	assert.Equal(t, uint16(1), linksStatSummary.ReachableCount)
+	assert.Equal(t, uint16(2), linksStatSummary.UnreachableCount)
 }

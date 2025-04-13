@@ -14,7 +14,7 @@ import (
 // https://medium.com/zus-health/mocking-outbound-http-requests-in-go-youre-probably-doing-it-wrong-60373a38d2aa
 
 func TestExtractFromUrl(t *testing.T) {
-	//return
+	return
 	h := HtmlElement{}
 	htmlStat, err := h.ExtractFromUrl("https://www.digitalocean.com/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package")
 	if err != nil {
@@ -26,23 +26,36 @@ func TestExtractFromUrl(t *testing.T) {
 	fmt.Println("htmlStat Id:", htmlStat.Id)
 }
 
-// func TestExtractFromIoReader(t *testing.T) {
+func TestExtractFromIoReader(t *testing.T) {
 
-// 	h := HtmlElement{}
-// 	const sampleHtml = `<!DOCTYPE html><html><head><style> body {background-color: powderblue;} h1 {color: red;} p {color: orange;}</style><title>Sample HTML Code</title><script src="my-script.js">abc</script></head><body><h1>Main title</h1><p id="demo"></p><a href="https://dev.to/">Dev Community</a><script>document.getElementById("demo").innerHTML = "Hello JavaScript!";</script></body></html>`
-// 	htmlStat, err := h.ExtractFromIoReader(strings.NewReader(sampleHtml))
-// 	if err != nil {
-// 		t.Fatalf("unexpected error extracting HTML Stat: %v", err)
-// 	}
-// 	fmt.Println("htmlStat:", htmlStat)
-// 	fmt.Println("htmlStat URL:", htmlStat.Url)
-// 	fmt.Println("htmlStat CreatedAt:", htmlStat.CreatedAt)
-// 	fmt.Println("htmlStat Id:", htmlStat.Id)
-// }
+	h := HtmlElement{}
+	const sampleHtml = `<!DOCTYPE html><html><head><style> body {background-color: powderblue;} h1 {color: red;} p {color: orange;}</style><title>Sample HTML Code</title><script src="my-script.js">abc</script></head><body><h1>Main title</h1><p id="demo"></p><a href="https://dev.to/">Dev Community</a><script>document.getElementById("demo").innerHTML = "Hello JavaScript!";</script></body></html>`
+	htmlStat, links, err := h.ExtractFromIoReader(strings.NewReader(sampleHtml))
+	if err != nil {
+		t.Fatalf("unexpected error extracting HTML Stat: %v", err)
+	}
+	fmt.Println("htmlStat:", htmlStat)
+	fmt.Println("htmlStat URL:", htmlStat.Url)
+	fmt.Println("htmlStat CreatedAt:", htmlStat.CreatedAt)
+	fmt.Println("htmlStat Id:", htmlStat.Id)
+	fmt.Println("links:", links)
+
+	assert.Equal(t, "", htmlStat.Url)
+	assert.Equal(t, "html", htmlStat.Version)
+	assert.Equal(t, "Sample HTML Code", htmlStat.Title)
+
+	assert.Equal(t, uint16(1), htmlStat.Headers.H1)
+	assert.Equal(t, uint16(0), htmlStat.Headers.H2)
+	assert.Equal(t, uint16(0), htmlStat.Headers.H3)
+	assert.Equal(t, uint16(0), htmlStat.Headers.H4)
+	assert.Equal(t, uint16(0), htmlStat.Headers.H5)
+	assert.Equal(t, uint16(0), htmlStat.Headers.H6)
+
+	assert.Equal(t, 1, len(links))
+	assert.Equal(t, "https://dev.to/", links[0])
+}
 
 func TestExtractFromIoReader_HtmlWithExternalLinks(t *testing.T) {
-	return
-
 	h := HtmlElement{}
 	const sampleHtml = `<!DOCTYPE html>
 <html>
