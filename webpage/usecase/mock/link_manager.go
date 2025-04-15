@@ -47,7 +47,7 @@ func (_m *MockElementManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (st
 	if rf, ok := ret.Get(1).(func(string) string); ok {
 		r1 = rf(inputUrlStr)
 	} else {
-		if ret.Get(0) != nil {
+		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(string)
 		}
 	}
