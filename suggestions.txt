@@ -1,0 +1,9 @@
+
+Possible Code Improvements:
+- Improve Unit Tests
+- Add/ Improve Integration Tests
+- Implement Interfaces for decoupling
+
+Feature Improvements:
+- Implement/ Add Database or Redis for storing requests and results
+- Implement GET by request Id and GET all Requests API End Points
