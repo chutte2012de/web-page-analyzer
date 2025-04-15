@@ -28,10 +28,10 @@ func (a *App) loadRoutes() {
 
 func (a *App) loadOrderRoutes(router chi.Router) {
 
+	linkManager := usecase.NewLinkManager()
+	htmlElement := usecase.NewHtmlElement(linkManager)
 	webPageHtmlStatHandler := &handler.HtmlStat{
-		HtmlElement: &usecase.HtmlElement{
-			LinkMan: &usecase.LinkManager{},
-		},
+		HtmlElement: htmlElement,
 	}
 
 	router.Post("/", webPageHtmlStatHandler.Create)

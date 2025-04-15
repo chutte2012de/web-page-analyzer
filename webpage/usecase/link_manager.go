@@ -13,14 +13,26 @@ import (
 // https://medium.com/insiderengineering/concurrent-http-requests-in-golang-best-practices-and-techniques-f667e5a19dea
 // https://stackoverflow.com/questions/45337881/go-routinemaking-concurrent-api-requests
 
-type LinkManager struct {
+type ILinkManager interface {
+	GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error)
+	GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error)
+	CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error)
+	GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error)
+	ValidateLinks(preffix string, links []string) ([]model.Link, error)
+}
+
+type linkManager struct {
+}
+
+func NewLinkManager() ILinkManager {
+	return &linkManager{}
 }
 
 type Job struct {
 	URL string
 }
 
-func (l *LinkManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error) {
+func (l *linkManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error) {
 	slog.Info("GetLinksInfo", "inputUrlStr", inputUrlStr)
 	inputUrlHostName, inputUrlWebsiteBaseName, _ := l.GetHostAndWebsiteBaseNames(inputUrlStr)
 	internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, _ := l.CategorizeLinks(inputUrlWebsiteBaseName, linksInPage)
@@ -53,7 +65,7 @@ func (l *LinkManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (mo
 	return linksInfo, nil
 }
 
-func (l *LinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error) {
+func (l *linkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error) {
 	slog.Info("GetHostAndWebsiteBaseNames", "inputUrlStr", inputUrlStr)
 	inputUrl, err := url.Parse(inputUrlStr)
 	if err != nil {
@@ -70,7 +82,7 @@ func (l *LinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, st
 	return inputUrl.String(), websiteBaseName, nil
 }
 
-func (l *LinkManager) CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error) {
+func (l *linkManager) CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error) {
 	slog.Info("CategorizeLinks", "websiteBaseName", websiteBaseName)
 
 	internalLinksWithoutPreffix := make([]string, 0, 100)
@@ -98,7 +110,7 @@ func (l *LinkManager) CategorizeLinks(websiteBaseName string, links []string) ([
 	return internalLinksWithoutPreffix, internalLinksWithPreffix, externalLinks, nil
 }
 
-func (l *LinkManager) GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error) {
+func (l *linkManager) GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error) {
 	total := 0
 	reachable := 0
 	unreachable := 0
@@ -141,7 +153,7 @@ func worker(requester *insrequester.Request, jobs <-chan Job, results chan<- *mo
 	}
 }
 
-func (l *LinkManager) ValidateLinks(preffix string, links []string) ([]model.Link, error) {
+func (l *linkManager) ValidateLinks(preffix string, links []string) ([]model.Link, error) {
 	requester := insrequester.NewRequester().Load()
 
 	numWorkers := 5 // Define the number of workers in the pool

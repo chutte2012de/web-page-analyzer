@@ -9,7 +9,7 @@ import (
 )
 
 type HtmlStat struct {
-	HtmlElement *usecase.HtmlElement
+	HtmlElement usecase.IHtmlElement
 }
 
 func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {

@@ -12,11 +12,22 @@ import (
 	"golang.org/x/net/html"
 )
 
-type HtmlElement struct {
-	LinkMan *LinkManager
+type IHtmlElement interface {
+	ExtractFromUrl(url string) (model.HtmlStat, error)
+	ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error)
 }
 
-func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
+type htmlElement struct {
+	LinkMan ILinkManager
+}
+
+func NewHtmlElement(linkManager ILinkManager) IHtmlElement {
+	return &htmlElement{
+		LinkMan: linkManager,
+	}
+}
+
+func (h *htmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 
 	slog.Info("Start ExtractFromUrl", "url", url)
 	resp, err := http.Get(url)
@@ -54,7 +65,7 @@ func (h *HtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	return htmlStat, nil
 }
 
-func (h *HtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error) {
+func (h *htmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error) {
 	now := time.Now().UTC()
 	htmlStat := model.HtmlStat{
 		Id: rand.Uint64(),

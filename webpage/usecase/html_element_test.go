@@ -14,8 +14,9 @@ import (
 // https://medium.com/zus-health/mocking-outbound-http-requests-in-go-youre-probably-doing-it-wrong-60373a38d2aa
 
 func TestExtractFromUrl(t *testing.T) {
-	return
-	h := HtmlElement{}
+	//return
+	l := NewLinkManager()
+	h := NewHtmlElement(l)
 	htmlStat, err := h.ExtractFromUrl("https://www.digitalocean.com/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package")
 	if err != nil {
 		t.Fatalf("unexpected error extracting HTML Stat: %v", err)
@@ -28,7 +29,8 @@ func TestExtractFromUrl(t *testing.T) {
 
 func TestExtractFromIoReader(t *testing.T) {
 
-	h := HtmlElement{}
+	l := NewLinkManager()
+	h := NewHtmlElement(l)
 	const sampleHtml = `<!DOCTYPE html><html><head><style> body {background-color: powderblue;} h1 {color: red;} p {color: orange;}</style><title>Sample HTML Code</title><script src="my-script.js">abc</script></head><body><h1>Main title</h1><p id="demo"></p><a href="https://dev.to/">Dev Community</a><script>document.getElementById("demo").innerHTML = "Hello JavaScript!";</script></body></html>`
 	htmlStat, links, err := h.ExtractFromIoReader(strings.NewReader(sampleHtml))
 	if err != nil {
@@ -56,7 +58,8 @@ func TestExtractFromIoReader(t *testing.T) {
 }
 
 func TestExtractFromIoReader_HtmlWithExternalLinks(t *testing.T) {
-	h := HtmlElement{}
+	l := NewLinkManager()
+	h := NewHtmlElement(l)
 	const sampleHtml = `<!DOCTYPE html>
 <html>
 <head>

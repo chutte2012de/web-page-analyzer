@@ -11,7 +11,7 @@ import (
 func TestValidateLinks(t *testing.T) {
 
 	return
-	linkMan := LinkManager{}
+	linkMan := NewLinkManager()
 	urls := []string{"http://example.com", "https://www.freecodecamp.org",
 		"https://www.behance.net", "https://codepen.io", "http://example.org",
 		"http://example.net", "http://exampleapple.net/"}
@@ -23,7 +23,7 @@ func TestValidateLinks(t *testing.T) {
 }
 
 func TestGetHostAndWebsiteBaseNames_FromLink(t *testing.T) {
-	linkMan := LinkManager{}
+	linkMan := NewLinkManager()
 
 	hostName, websiteName, err := linkMan.GetHostAndWebsiteBaseNames("https://www.digitalocean.com/community/tutorials/how-to-write-unit-tests-in-go-using-go-test-and-the-testing-package")
 	if err != nil {
@@ -36,7 +36,7 @@ func TestGetHostAndWebsiteBaseNames_FromLink(t *testing.T) {
 }
 
 func TestGetHostAndWebsiteBaseNames_FromMainWebSiteUrl(t *testing.T) {
-	linkMan := LinkManager{}
+	linkMan := NewLinkManager()
 
 	hostName, websiteName, err := linkMan.GetHostAndWebsiteBaseNames("http://www.facebook.com")
 	if err != nil {
@@ -49,7 +49,7 @@ func TestGetHostAndWebsiteBaseNames_FromMainWebSiteUrl(t *testing.T) {
 }
 
 func TestCategorizeLinks(t *testing.T) {
-	linkMan := LinkManager{}
+	linkMan := NewLinkManager()
 
 	urls := []string{"http://example.com", "https://www.freecodecamp.org",
 		"https://www.behance.net", "https://codepen.io", "http://example.org",
@@ -147,7 +147,7 @@ func TestCategorizeLinks(t *testing.T) {
 }
 
 func TestGetLinksSummaryStat_WithOneLinkAndNoReachabilityInfo(t *testing.T) {
-	linkMan := LinkManager{}
+	linkMan := NewLinkManager()
 
 	links := make([]model.Link, 0, 3)
 
@@ -166,7 +166,7 @@ func TestGetLinksSummaryStat_WithOneLinkAndNoReachabilityInfo(t *testing.T) {
 }
 
 func TestGetLinksSummaryStat_MultipleLinks(t *testing.T) {
-	linkMan := LinkManager{}
+	linkMan := NewLinkManager()
 
 	links := make([]model.Link, 0, 3)
 
