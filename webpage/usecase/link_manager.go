@@ -13,16 +13,18 @@ import (
 // https://medium.com/insiderengineering/concurrent-http-requests-in-golang-best-practices-and-techniques-f667e5a19dea
 // https://stackoverflow.com/questions/45337881/go-routinemaking-concurrent-api-requests
 
-type ILinkManager interface {
-	GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error)
-	GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error)
-	CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error)
-	GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error)
-	ValidateLinks(preffix string, links []string) ([]model.Link, error)
-}
+type (
+	ILinkManager interface {
+		GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error)
+		GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error)
+		CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error)
+		GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error)
+		ValidateLinks(preffix string, links []string) ([]model.Link, error)
+	}
 
-type linkManager struct {
-}
+	linkManager struct {
+	}
+)
 
 func NewLinkManager() ILinkManager {
 	return &linkManager{}

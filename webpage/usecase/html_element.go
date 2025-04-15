@@ -12,14 +12,16 @@ import (
 	"golang.org/x/net/html"
 )
 
-type IHtmlElement interface {
-	ExtractFromUrl(url string) (model.HtmlStat, error)
-	ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error)
-}
+type (
+	IHtmlElement interface {
+		ExtractFromUrl(url string) (model.HtmlStat, error)
+		ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error)
+	}
 
-type htmlElement struct {
-	LinkMan ILinkManager
-}
+	htmlElement struct {
+		LinkMan ILinkManager
+	}
+)
 
 func NewHtmlElement(linkManager ILinkManager) IHtmlElement {
 	return &htmlElement{
