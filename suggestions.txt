@@ -2,9 +2,13 @@
 Possible Code Improvements:
 - Improve Unit Tests
 - Add/ Improve Integration Tests
-- Implement Interfaces for decoupling
+- Implement Interfaces for decoupling/ Interface Segregation
 
 Feature Improvements:
 - Implement/ Add Database or Redis for storing requests and results
 - Implement GET by request Id and GET all Requests API End Points
 - Add Retry for API Calls and Rate Limiting for exposed API End Points
+
+TODO:
+- Remove Unit Tests used for logic implementation and Implement proper Unit Tests instead
+- Code Cleanup

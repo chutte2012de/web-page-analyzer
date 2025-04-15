@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -40,4 +41,25 @@ func TestCreateHtmlStat_Success(t *testing.T) {
 	assert.Equal(t, uint64(9988321), actual.Id)
 	assert.Equal(t, "https://riyasewana.com/login.php", actual.Url)
 	assert.Equal(t, "Title of the Web Page 123", actual.Title)
+}
+
+func TestCreateHtmlStat_Failure(t *testing.T) {
+	htmlElement := new(mock.MockHtmlElement)
+	httpMethod := http.MethodPost
+	routeUrl := "/webpage/htmlstat"
+	requestBody := `{"url": "https://riyasewana.com/login.php"}`
+
+	htmlStatHandler := HtmlStat{
+		HtmlElement: htmlElement,
+	}
+
+	err := errors.New("Wep Page Connection Failed")
+	htmlElement.On("ExtractFromUrl", "https://riyasewana.com/login.php").Return(nil, err)
+
+	recorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(httpMethod, routeUrl, bytes.NewBuffer([]byte(requestBody)))
+
+	htmlStatHandler.Create(recorder, request)
+	assert.Equal(t, http.StatusBadRequest, recorder.Result().StatusCode)
+
 }
