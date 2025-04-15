@@ -7,3 +7,4 @@ Possible Code Improvements:
 Feature Improvements:
 - Implement/ Add Database or Redis for storing requests and results
 - Implement GET by request Id and GET all Requests API End Points
+- Add Retry for API Calls and Rate Limiting for exposed API End Points
