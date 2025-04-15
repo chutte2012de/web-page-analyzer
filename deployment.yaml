@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-page-analyzer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-page-analyzer
+  template:
+    metadata:
+      labels:
+        app: web-page-analyzer
+    spec:
+      containers:
+        - name: web-page-analyzer
+          image: web-page-analyzer:latest
+          ports:
+            - containerPort: 4010
