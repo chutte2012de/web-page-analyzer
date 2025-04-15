@@ -24,21 +24,23 @@ func (h *HtmlStat) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	html_stat, err := h.HtmlElement.ExtractFromUrl(body.Url)
+	htmlStat, err := h.HtmlElement.ExtractFromUrl(body.Url)
 	if err != nil {
 		slog.Error("Failed to Extract Html Element Statistics", "errpr", err)
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		return
 	}
+	slog.Info("Html Stat Received", "htmlStat", htmlStat)
 
-	res, err := json.Marshal(html_stat)
+	res, err := json.Marshal(htmlStat)
 	if err != nil {
 		slog.Error("Failed to Marshal Html Element Statistics", "error", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
+	slog.Info("Json Html Stat", "res", res)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)

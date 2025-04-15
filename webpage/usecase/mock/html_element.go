@@ -14,16 +14,24 @@ type MockHtmlElement struct {
 func (_m *MockHtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	ret := _m.Called(url)
 
+	if len(ret) == 0 {
+		panic("no return value specified for ExtractFromUrl")
+	}
+
 	var r0 model.HtmlStat
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (model.HtmlStat, error)); ok {
+		return rf(url)
+	}
 	if rf, ok := ret.Get(0).(func(string) model.HtmlStat); ok {
 		r0 = rf(url)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(model.HtmlStat)
 		}
+		// r0 = ret.Get(0).(model.HtmlStat)
 	}
 
-	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
 		r1 = rf(url)
 	} else {

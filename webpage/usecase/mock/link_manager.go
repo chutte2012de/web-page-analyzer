@@ -5,11 +5,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockElementManager struct {
+type MockLinkManager struct {
 	mock.Mock
 }
 
-func (_m *MockElementManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error) {
+func (_m *MockLinkManager) GetLinksInfo(inputUrlStr string, linksInPage []string) (model.LinksInfo, error) {
 	ret := _m.Called(inputUrlStr, linksInPage)
 
 	var r0 model.LinksInfo
@@ -31,7 +31,7 @@ func (_m *MockElementManager) GetLinksInfo(inputUrlStr string, linksInPage []str
 	return r0, r1
 }
 
-func (_m *MockElementManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error) {
+func (_m *MockLinkManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (string, string, error) {
 	ret := _m.Called(inputUrlStr)
 
 	var r0 string
@@ -62,7 +62,7 @@ func (_m *MockElementManager) GetHostAndWebsiteBaseNames(inputUrlStr string) (st
 	return r0, r1, r2
 }
 
-func (_m *MockElementManager) CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error) {
+func (_m *MockLinkManager) CategorizeLinks(websiteBaseName string, links []string) ([]string, []string, []string, error) {
 	ret := _m.Called(websiteBaseName, links)
 
 	var r0 []string
@@ -102,7 +102,7 @@ func (_m *MockElementManager) CategorizeLinks(websiteBaseName string, links []st
 	return r0, r1, r2, r3
 }
 
-func (_m *MockHtmlElement) GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error) {
+func (_m *MockLinkManager) GetLinksSummaryStat(links []model.Link) (model.SummaryStat, error) {
 	ret := _m.Called(links)
 
 	var r0 model.SummaryStat
@@ -124,7 +124,7 @@ func (_m *MockHtmlElement) GetLinksSummaryStat(links []model.Link) (model.Summar
 	return r0, r1
 }
 
-func (_m *MockHtmlElement) ValidateLinks(preffix string, links []string) ([]model.Link, error) {
+func (_m *MockLinkManager) ValidateLinks(preffix string, links []string) ([]model.Link, error) {
 	ret := _m.Called(preffix, links)
 
 	var r0 []model.Link
