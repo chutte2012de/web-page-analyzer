@@ -173,20 +173,6 @@ func (h *htmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string
 			}
 			currentTokenTag = ""
 		}
-
-		// 	// Check if the token is an <a> tag
-		// 	isAnchor := t.Data == "a"
-		// 	if !isAnchor {
-		// 		continue
-		// 	}
-
-		// 	// Extract the href value, if there is one
-		// 	// ok, url := getHref(t)
-		// 	// if !ok {
-		// 	// 	continue
-		// 	// }
-
-		// }
 	}
 
 	return htmlStat, links, nil
