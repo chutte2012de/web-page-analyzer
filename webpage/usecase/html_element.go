@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"math/rand/v2"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/chutte2012de/web-page-analyzer/webpage/model"
@@ -147,11 +148,47 @@ func (h *htmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string
 			}
 		}
 
+		// Check if the Form is available in web page
+		// this will be used to determine if a login form is available
+		if currentTokenTag == "form" {
+			fmt.Println("FORM tag: [", html.StartTagToken, "]")
+		}
+		if html.StartTagToken == tokenType && currentTokenTag == "form" {
+			htmlStat.Form = "AVAILABLE"
+		}
+
+		// Check if it is a Login Form with Input Type Button
+		if html.SelfClosingTagToken == tokenType && htmlStat.Form == "AVAILABLE" && currentTokenTag == "input" {
+			inputType := ""
+			inputValue := ""
+			for _, attr := range token.Attr {
+				fmt.Println("input Link: Val: [", attr.Val, "], Key: [", attr.Key, "]")
+				if attr.Key == "type" {
+					inputType = attr.Val
+				}
+				if attr.Key == "value" {
+					inputValue = strings.ToLower(strings.ReplaceAll(attr.Val, " ", ""))
+				}
+			}
+			// Check if the Button is Login or Signin button
+			if (inputType == "button" || inputType == "submit") &&
+				(inputValue == "login" || inputValue == "signin") {
+				htmlStat.LoginForm = "AVAILABLE"
+			}
+		}
+
+		// Check if it is a Login Form with Button
+		if html.TextToken == tokenType && htmlStat.Form == "AVAILABLE" && currentTokenTag == "button" {
+			buttonText := strings.ToLower(strings.ReplaceAll(token.Data, " ", ""))
+			// Check if the Button is Login or Signin button
+			if buttonText == "login" || buttonText == "signin" {
+				htmlStat.LoginForm = "AVAILABLE"
+			}
+		}
+
 		if currentTokenTag == "a" || currentTokenTag == "link" {
 			for _, attr := range token.Attr {
 				if attr.Key == "href" {
-					//links = append(links, attr.Val)
-					// fmt.Println("a Link: [", attr.Val, "]")
 					links = append(links, attr.Val)
 				}
 
@@ -159,21 +196,14 @@ func (h *htmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string
 		}
 
 		if html.SelfClosingTagToken == tokenType {
-			// fmt.Printf("Token: %v\n", html.UnescapeString(token.String()))
-			// fmt.Printf("currentTokenTag: %v\n", currentTokenTag)
 			if currentTokenTag == "img" {
 				for _, attr := range token.Attr {
 					if attr.Key == "src" {
-						//links = append(links, attr.Val)
-						// fmt.Println("a Link: [", attr.Val, "]")
 						links = append(links, attr.Val)
 					}
-
 				}
 			}
 			currentTokenTag = ""
 		}
 	}
-
-	return htmlStat, links, nil
 }
