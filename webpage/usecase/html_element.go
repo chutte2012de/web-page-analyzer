@@ -107,7 +107,17 @@ func (h *htmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string
 		// fmt.Printf("Token: %v\n", html.UnescapeString(token.String()))
 
 		if tokenType == html.DoctypeToken {
-			htmlStat.Version = token.Data
+			if strings.ReplaceAll(token.Data, " ", "") == "html" {
+				htmlStat.Version = "HTML5"
+			} else if strings.Contains(token.Data, "HTML 4.01") {
+				htmlStat.Version = "HTML 4.01"
+			} else if strings.Contains(token.Data, "HTML 4.01") {
+				htmlStat.Version = "XHTML 1.0"
+			} else if strings.Contains(token.Data, "HTML 4.01") {
+				htmlStat.Version = "XHTML 1.1"
+			} else {
+				htmlStat.Version = "Unknown HTML Version"
+			}
 			currentTokenTag = ""
 			continue
 		}
