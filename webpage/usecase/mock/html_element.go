@@ -11,8 +11,8 @@ type MockHtmlElement struct {
 	mock.Mock
 }
 
-func (_m *MockHtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
-	ret := _m.Called(url)
+func (mockHtmlElement *MockHtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
+	ret := mockHtmlElement.Called(url)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ExtractFromUrl")
@@ -41,8 +41,8 @@ func (_m *MockHtmlElement) ExtractFromUrl(url string) (model.HtmlStat, error) {
 	return r0, r1
 }
 
-func (_m *MockHtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error) {
-	ret := _m.Called(r)
+func (mockHtmlElement *MockHtmlElement) ExtractFromIoReader(r io.Reader) (model.HtmlStat, []string, error) {
+	ret := mockHtmlElement.Called(r)
 
 	var r0 model.HtmlStat
 	if rf, ok := ret.Get(0).(func(io.Reader) model.HtmlStat); ok {

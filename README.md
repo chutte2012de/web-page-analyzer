@@ -1,6 +1,7 @@
 "# web-page-analyzer"
 
 "Run locally"
+`go mod tidy`
 `go run main.go`
 
 "Run in DOcker"
